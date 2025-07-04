@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Room会议</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+</head>
+<body class="agora-theme">
+  <div class="navbar-fixed">
+    <nav class="agora-navbar">
+      <div class="nav-wrapper agora-primary-bg valign-wrapper">
+        <h5 class="left-align">用户留言</h5>
+      </div>
+    </nav>
+  </div>
+  <ul id="messagelist" class="list-view">
+  </ul>
+  <div class="view_leavemsg" style="margin: 10">
+	  <div class="input-field">
+	  	<input type="text" placeholder="请输入您的留言" id="message_ID">
+	  </div>
+	  <div class="col s12">
+	  	<button class="btn btn-raised btn-primary waves-effect waves-light" id="leave_msg">留言</button>
+	  </div>
+  </div>
+   
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  <script src="AgoraRTCSDK-3.6.11.js"></script>
+  
+  <script>
+    
+	var roomName = "";
+
+    function Toastify (options) {
+      M.toast({html: options.text, classes: options.classes})
+    }
+
+    var Toast = {
+      info: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "info-toast"
+        })
+      },
+      notice: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "notice-toast"
+        })
+      },
+      error: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "error-toast"
+        })
+      }
+    }
+    
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+      // This will start the join functions with all the configuration selected by the user.
+      
+	  $("#leave_msg").on("click", function(e) {
+		  console.log("leave_msg")
+		  e.preventDefault()
+		  leave_msg()
+	  });
+	  
+	  //接收数据
+	  var para = window.location.search;
+	  roomName = decodeURI(para.slice(para.indexOf("=") + 1));
+	  
+	  //获取留言
+	  $.ajax({
+	  	type: "post",
+	  	url: "https://wxapi.hzmttgroup.com:8848/queryCommentLists",
+	  	dataType: "json",
+	  	data: {
+	  		room_name: roomName,
+	  		startnum: 0,
+	  		key: 'appROOM1684119622333hzmtt'
+	  	},
+	  	async: false,
+	  	success: function(data) {
+	  		console.log(data)
+			if(200 == data.code){
+				for(var i in data.data){
+					$("<li />", {
+					  text: data.data[i].user_name + "的留言：" + data.data[i].comment_content + "(" + data.data[i].Time + ")"
+					}).appendTo("#messagelist")
+				}
+			} else {
+				Toast.info(data.desc)
+			}
+	  	}
+	  });
+	  
+    })
+	
+	/**
+	 * 留言
+	 */
+	function leave_msg(){
+		var msg = jQuery("#message_ID").val()
+		if (!msg) {
+			Toast.info("留言内容不能为空")
+			return;
+		}
+		var your_name = localStorage.getItem("YOUR_NAME"); //取回
+		$("#user_name").val(your_name);
+		$.ajax({
+			type: "post",
+			url: "https://wxapi.hzmttgroup.com:8848/insertCommentLists",
+			dataType: "json",
+			data: {
+				room_name: roomName,
+				user_name: 'web-' + your_name,
+				comment_content: msg,
+				key: 'appROOM1684119622333hzmtt'
+			},
+			async: false,
+			success: function(data) {
+				console.log(data)
+				Toast.info("请刷新页面")
+			}
+		});
+		
+	}
+	
+	
+
+  </script>
+  
+  <style>
+  	  
+  	  .list-view{
+		  margin: 20px;
+  		  justify-content: center;
+  		  align-items: center;
+  		  text-align: left;
+  		  color: #2b2b2b;
+  		  line-height: 1.8;
+		  text-justify: auto;
+  	  }
+	  .view_leavemsg{
+		  margin: 20px;
+		  width: 20%;
+	  }
+  	  
+  </style>
+  
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta name="google-adsense-account" content="ca-pub-2322403945276683">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Room会议</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+</head>
+<body class="agora-theme">
+  <div class="navbar-fixed">
+    <nav class="agora-navbar">
+      <div class="nav-wrapper agora-primary-bg valign-wrapper">
+        <h5 class="left-align">Room会议</h5>
+      </div>
+    </nav>
+  </div>
+  <form id="form" class="row col l12 s12">
+    <div class="row container col l12 s12">
+      <div class="col" style="min-width: 433px; max-width: 443px">
+        <div class="card" style="margin-top: 0px; margin-bottom: 0px;">
+          <div class="row card-content" style="margin-bottom: 0px;">
+              <div class="input-field">
+			  	<label for="roomNAME" class="active">您的房间名称</label>
+			  	<input type="text" placeholder="请输入房间名称" name="roomNAME" id="room_NAME">
+			  </div>
+			  <div class="input-field">
+			  	<label for="roomPSW" class="active">您的房间密码</label>
+			  	<input type="text" placeholder="请输入房间6位数字密码" name="roomPSW" id="room_PSW">
+			  </div>
+			  <div class="input-field">
+			  	<label for="yourNAME" class="active">显示名称</label>
+			  	<input type="text" placeholder="请输入房间里您的显示名称" name="yourNAME" id="your_NAME">
+			  </div>
+              <div>
+                <div class="col s12" style="margin: 5px">
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="join">加入房间</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="visitor">无音频接入</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="share">共享屏幕</button>
+                </div>
+              </div>
+			  <div>
+			    <div class="col s12" style="margin: 5px">
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="create">创建房间</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="downloadapp">下载APP</button>
+			    </div>
+			  </div>
+			  <br>
+			  <label class="view-tips">不要使用微信内置浏览器进入，请使用手机自带浏览器进入房间，微信内置浏览器不支持发送视频流，只能接收！</label>
+          </div>
+        </div>
+      </div>
+      
+	  <div class="row" style="margin: 0">
+	  	<div class="col s12" style="margin-top: 10rem;">
+	  		<div style="margin-top: 3rem; margin-left: 3rem; ">
+				<label>Room会议APP安卓版本下载：各大手机应用商城搜索：Room会议</label>
+	  		</div>
+			<div style="margin-top: 1rem; margin-left: 3rem; ">
+				<label>咨询、合作、建议请联系微信(13616548127)或QQ(2436411661@qq.com)</label>
+			</div>
+	  	</div>
+	  </div>
+    </div>
+  </form>
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  <script src="AgoraRTCSDK-3.6.11.js"></script>
+  
+  
+  <script>
+    console.log("agora sdk version: " + AgoraRTC.VERSION + " compatible: " + AgoraRTC.checkSystemRequirements());
+    
+
+    function Toastify (options) {
+      M.toast({html: options.text, classes: options.classes})
+    }
+
+    var Toast = {
+      info: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "info-toast"
+        })
+      },
+      notice: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "notice-toast"
+        })
+      },
+      error: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "error-toast"
+        })
+      }
+    }
+
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+      // This will start the join functions with all the configuration selected by the user.
+	  
+	  
+      $("#join").on("click", function (e) {
+		  console.log("join")
+		  e.preventDefault();
+		  join()
+      })
+	  $("#visitor").on("click", function (e) {
+		  console.log("visitor")
+		  e.preventDefault();
+		  visitor()
+	  })
+	  $("#create").on("click", function(e) {
+		  console.log("create")
+		  e.preventDefault()
+		  create()
+	  });
+	  $("#share").on("click", function(e) {
+		  console.log("share")
+		  e.preventDefault()
+		  share()
+	  });
+	  $("#downloadapp").on("click", function(e) {
+		  console.log("downloadapp")
+		  e.preventDefault()
+		  downloadapp()
+	  });
+	  
+	  var your_name = localStorage.getItem("YOUR_NAME"); // 取回
+	  $("#your_NAME").val(your_name);
+	  
+	  var room_name = localStorage.getItem("ROOM_NAME"); // 取回
+	  $("#room_NAME").val(room_name);
+	  
+	  
+    })
+	
+	/**
+	 * 加入房间
+	 */
+	function join () {
+		
+	  //房间名称
+	  var room_name = jQuery("#room_NAME").val()
+	  if (!room_name) {
+		  alert("请输入房间名称")
+		  return;
+	  }
+	  //密码校验
+	  var psw = jQuery("#room_PSW").val()
+	  if (!psw) {
+		  alert("密码不能为空！输入6位数字密码")
+		  return;
+	  }
+	  //显示名称
+	  var your_name = jQuery("#your_NAME").val()
+	  if (!your_name) {
+		  alert("请输入房间里您的显示名称")
+		  return;
+	  }
+	  
+	  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+	  		console.log('isIOS')
+	  	} else if (/(Android)/i.test(navigator.userAgent)) {
+	  		alert('安卓手机请到手机应用商城下载Room会议APP')
+	  		console.log('isAndroid')
+	  	} else {
+	  		console.log('isPC')
+	  	}
+	  
+	  
+	  //获取房间信息
+	  $.ajax({
+	  	type: "post",
+	  	url: "https://wxapi.hzmttgroup.com:8848/queryRoomListsByRoomName",
+	  	dataType: "json",
+	  	data: {
+	  		room_name: room_name,
+	  		key: 'appROOM1684119622333hzmtt'
+	  	},
+	  	async: false,
+	  	success: function(data) {
+	  		console.log(data)
+			if(200 == data.code){
+				//存在
+				if(data.data[0].room_password === psw) {
+					//判断是否过期 1个月
+					let time = +new Date() - data.data[0].create_time;//当前时间-创建时间
+					if(time > 1*31*24*3600*1000){
+						alert("房间创建时间：" + data.data[0].Time + "，一个月已到期，请联系房间创建者在APP上续费！或联系微信客服（13616548127）进行续费！")
+						return;
+					} else {
+						// 存储
+						localStorage.setItem("YOUR_NAME", your_name);
+						localStorage.setItem("ROOM_NAME", room_name);
+						
+						//跳转
+						console.log(data.data[0].room_name)
+						window.location.href = './join-room.html?roomName=' + encodeURI(data.data[0].room_name);
+					}
+				} else {
+					Toast.error("密码错误，请重试！")
+				}
+			} else {
+				Toast.error(data.desc)
+			}
+	  	}
+	  });
+	  
+	}
+	
+	
+	/**
+	 * 旁听
+	 */
+	function visitor () {
+	  //房间名称
+	  var room_name = jQuery("#room_NAME").val()
+	  if (!room_name) {
+		  alert("请输入房间名称")
+		  return;
+	  }
+	  //密码校验
+	  var psw = jQuery("#room_PSW").val()
+	  if (!psw) {
+		  alert("密码不能为空！输入6位数字密码")
+		  return;
+	  }
+	  //显示名称
+	  var your_name = jQuery("#your_NAME").val()
+	  if (!your_name) {
+		  alert("请输入房间里您的显示名称")
+		  return;
+	  }
+	  
+	  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+	  		console.log('isIOS')
+	  	} else if (/(Android)/i.test(navigator.userAgent)) {
+	  		alert('安卓手机请到手机应用商城下载Room会议APP')
+	  		console.log('isAndroid')
+	  	} else {
+	  		console.log('isPC')
+	  	}
+	  
+	  //获取房间信息
+	  $.ajax({
+	  	type: "post",
+	  	url: "https://wxapi.hzmttgroup.com:8848/queryRoomListsByRoomName",
+	  	dataType: "json",
+	  	data: {
+	  		room_name: room_name,
+	  		key: 'appROOM1684119622333hzmtt'
+	  	},
+	  	async: false,
+	  	success: function(data) {
+	  		console.log(data)
+	  			if(200 == data.code){
+	  				//存在
+	  				if(data.data[0].room_password === psw) {
+	  					//判断是否过期 1个月
+	  					let time = +new Date() - data.data[0].create_time;//当前时间-创建时间
+	  					if(time > 1*31*24*3600*1000){
+	  						alert("房间创建时间：" + data.data[0].Time + "，一个月已到期，请联系房间创建者在APP上续费！或联系微信客服（13616548127）进行续费！")
+	  						return;
+	  					} else {
+							// 存储
+							localStorage.setItem("YOUR_NAME", your_name);
+							localStorage.setItem("ROOM_NAME", room_name);
+	  						//跳转
+	  						window.location.href = './visitor-room.html?roomName=' + encodeURI(data.data[0].room_name);
+	  					}
+	  				} else {
+	  					Toast.error("密码错误，请重试！")
+	  				}
+	  			} else {
+	  				Toast.error(data.desc)
+	  			}
+	  	}
+	  });
+	  
+	}
+	
+	
+	/**
+	 * 共享屏幕
+	 */
+	function share () {
+	  //房间名称
+	  var room_name = jQuery("#room_NAME").val()
+	  if (!room_name) {
+		  alert("请输入房间名称")
+		  return;
+	  }
+	  //密码校验
+	  var psw = jQuery("#room_PSW").val()
+	  if (!psw) {
+		  alert("密码不能为空！输入6位数字密码")
+		  return;
+	  }
+	  //显示名称
+	  var your_name = jQuery("#your_NAME").val()
+	  if (!your_name) {
+		  alert("请输入房间里您的显示名称")
+		  return;
+	  }
+	  
+	  if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+	  		console.log('isIOS')
+	  	} else if (/(Android)/i.test(navigator.userAgent)) {
+	  		alert('安卓手机请到手机应用商城下载Room会议APP')
+	  		console.log('isAndroid')
+	  	} else {
+	  		console.log('isPC')
+	  	}
+	  
+	  //获取房间信息
+	  $.ajax({
+	  	type: "post",
+	  	url: "https://wxapi.hzmttgroup.com:8848/queryRoomListsByRoomName",
+	  	dataType: "json",
+	  	data: {
+	  		room_name: room_name,
+	  		key: 'appROOM1684119622333hzmtt'
+	  	},
+	  	async: false,
+	  	success: function(data) {
+	  		console.log(data)
+	  			if(200 == data.code){
+	  				//存在
+	  				if(data.data[0].room_password === psw) {
+	  					//判断是否过期 1个月
+	  					let time = +new Date() - data.data[0].create_time;//当前时间-创建时间
+	  					if(time > 1*31*24*3600*1000){
+	  						alert("房间创建时间：" + data.data[0].Time + "，一个月已到期，请联系房间创建者在APP上续费！或联系微信客服（13616548127）进行续费！")
+	  						return;
+	  					} else {
+							// 存储
+							localStorage.setItem("YOUR_NAME", your_name);
+							localStorage.setItem("ROOM_NAME", room_name);
+	  						//跳转
+	  						window.location.href = './share_screen.html?roomName=' + encodeURI(data.data[0].room_name);
+	  					}
+	  				} else {
+	  					Toast.error("密码错误，请重试！")
+	  				}
+	  			} else {
+	  				Toast.error(data.desc)
+	  			}
+	  	}
+	  });
+	  
+	  
+	}
+	
+	/**
+	 * 创建房间
+	 * 
+	 * @param {Object} rtc
+	 * @param {Object} option
+	 */
+	function create() {
+		//跳转
+		window.location.href = './create_room.html'
+	}
+	
+	
+	/**
+	 * 下载APP
+	 */
+	function downloadapp(){
+		window.location.href = "https://hzmtt-room.oss-cn-hangzhou.aliyuncs.com/room_229_v34_signed.apk";
+	}
+	
+	
+
+  </script>
+  
+  <style>
+  	  .view-tips{
+		  margin: 10px;
+  		  justify-content: left;
+  		  align-items: left;
+  		  text-align: left;
+  		  color: crimson;
+  		  line-height: 2;
+  	  }
+  	  
+  </style>
+  
+</html>

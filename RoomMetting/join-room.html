@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Room会议</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+</head>
+<body class="agora-theme" style="background-color:#ffffff;" >
+	<div class="navbar-fixed">
+	  <nav class="agora-navbar">
+	    <div class="nav-wrapper agora-primary-bg valign-wrapper">
+	      <h5 class="left-align">Room会议</h5>
+	    </div>
+	  </nav>
+	</div>
+	<div class="row" style="margin: 0">
+		<label class="view-tips">不要使用微信内置浏览器进入，请使用手机自带浏览器进入房间，微信内置浏览器不支持发送视频流，只能接收！</label>
+		<div class="col s12" style="margin-top: 1rem;">
+			<button class="btn btn-raised btn-primary waves-effect waves-light" 
+				id="open_mic">打开麦克风</button>
+			<button class="btn btn-raised btn-primary waves-effect waves-light"
+				id="close_mic">关闭麦克风</button>
+			<button class="btn btn-raised btn-primary waves-effect waves-light"
+				id="open_camera">打开摄像头</button>
+			<button class="btn btn-raised btn-primary waves-effect waves-light"
+				id="close_camera">关闭摄像头</button>
+			<button class="btn btn-raised btn-primary waves-effect waves-light"
+				id="room_members">房间成员</button>
+			<button class="btn btn-raised btn-primary waves-effect waves-light"
+				id="leave_msg">留言列表</button>
+			<button class="btn btn-raised btn-primary waves-effect waves-light"
+				id="leave_room">离开房间</button>
+		</div>
+	</div>
+	<div class="video-grid" id="video">
+	  <div>
+	    <div class="video-view" id="local_stream"></div>
+	    <div class="view-username" id="user_name"></div>
+	  </div>
+	</div>
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  <script src="AgoraRTCSDK-3.6.11.js"></script>
+  
+  <script>
+    
+	var roomName = ""
+	var roomType = 0;
+	var room_appid = ""
+	var room_channel_name = ""
+	var current_uid = Math.ceil(Math.random() * 1000)
+	
+
+    function Toastify (options) {
+      M.toast({html: options.text, classes: options.classes})
+    }
+
+    var Toast = {
+      info: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "info-toast"
+        })
+      },
+      notice: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "notice-toast"
+        })
+      },
+      error: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "error-toast"
+        })
+      }
+    }
+    
+	/**
+	 * 其他人加入时新增
+	 * 
+	 * @param {Object} id
+	 * @param {Object} show
+	 * @param {Object} name
+	 */
+    function addView (id, show, name) {
+		if (!$("#" + id)[0]) {
+			$("<div/>", {
+			  id: "remote_video_panel_" + id,
+			  class: "video",
+			}).appendTo("#video")
+			
+			$("<div/>", {
+			  id: "remote_video_" + id,
+			  class: "video-view"
+			}).appendTo("#remote_video_panel_" + id)
+			
+			$("<div/>", {
+			  id: "user_name_"+ id,
+			  class: "view-username",
+			  text: name,
+			}).appendTo("#remote_video_panel_" + id)
+		}
+    }
+	
+    function removeView (id) {
+      if ($("#remote_video_panel_" + id)[0]) {
+		  $("#remote_video_panel_"+id).remove()
+      }
+    }
+
+    
+    var rtc = {
+      client: null,
+      joined: false,
+      published: false,
+      localStream: null,
+      remoteStreams: [],
+      params: {}
+    }
+
+    function handleEvents (rtc) {
+      // Occurs when an error message is reported and requires error handling.
+      rtc.client.on("error", (err) => {
+		  console.log(err)
+      })
+      // Occurs when the local stream is published.推流成功
+      rtc.client.on("stream-published", function (evt) {
+		  console.log("stream-published")
+      })
+      // Occurs when the remote stream is added.新增数据流
+      rtc.client.on("stream-added", function (evt) {
+		  var remoteStream = evt.stream
+		  var id = remoteStream.getId()
+		  if (id !== rtc.params.uid) {
+			  rtc.client.subscribe(remoteStream, function (err) {
+		      console.log("stream subscribe failed", err)
+		    })
+		  }
+		  console.log("stream-added remote-uid: ", id)
+      })
+      // Occurs when a user subscribes to a remote stream.新增数据流
+      rtc.client.on("stream-subscribed", function (evt) {
+		  var remoteStream = evt.stream
+		  var id = remoteStream.getId()
+		  //有个时间差，2秒后再获取
+		  setTimeout(function(){
+		  	//显示谁加入
+			$.ajax({
+				type: "post",
+				url: "https://wxapi.hzmttgroup.com:8848/queryRoomUserInfoByUid",
+				dataType: "json",
+				data: {
+					room_name: roomName,
+					user_uid: id + '',
+					startnum: 0,
+					key: 'appROOM1684119622333hzmtt'
+				},
+				async: false,
+				success: function(data) {
+					console.log(data)
+					if(200 == data.code) {
+						Toast.notice(data.data[0].user_name + "已加入！")
+						addView(id, true, data.data[0].user_name)
+					} else {
+						Toast.notice(id + "已加入！")
+						addView(id, true, "用户_" + id)
+					}
+					rtc.remoteStreams.push(remoteStream)
+					remoteStream.play("remote_video_" + id)
+				}
+			});
+			
+		  }, 2000)
+      })
+	  // Occurs when the peer user leaves the channel; for example, the peer user calls Client.leave.
+	  rtc.client.on("peer-leave", function (evt) {
+		  var id = evt.uid;
+		  console.log("id", evt)
+		  let streams = rtc.remoteStreams.filter(e => id !== e.getId())
+		  let peerStream = rtc.remoteStreams.find(e => id === e.getId())
+		  if(peerStream && peerStream.isPlaying()) {
+			  peerStream.stop()
+		  }
+		  rtc.remoteStreams = streams
+		  if (id !== rtc.params.uid) {
+			  removeView(id)
+		  }
+		  
+		  //显示谁离开
+		  $.ajax({
+		  	type: "post",
+		  	url: "https://wxapi.hzmttgroup.com:8848/queryRoomUserInfoByUid",
+		  	dataType: "json",
+		  	data: {
+		  		room_name: roomName,
+		  		user_uid: id + '',
+		  		startnum: 0,
+		  		key: 'appROOM1684119622333hzmtt'
+		  	},
+		  	async: false,
+		  	success: function(data) {
+		  		console.log(data)
+		  		if(200 == data.code) {
+		  			Toast.notice(data.data[0].user_name + "离开了房间！")
+		  		} else {
+		  			Toast.notice(id + "离开了房间！")
+		  		}
+		  	}
+		  });
+		  
+	  })
+      // Occurs when the remote stream is removed; for example, a peer user calls Client.unpublish.
+      rtc.client.on("stream-removed", function (evt) {
+		  var remoteStream = evt.stream
+		  var id = remoteStream.getId()
+		  if(remoteStream.isPlaying()) {
+			  remoteStream.stop()
+		  }
+		  rtc.remoteStreams = rtc.remoteStreams.filter(function (stream) {
+			  return stream.getId() !== id
+		  })
+		  removeView(id)
+		  console.log("stream-removed remote-uid: ", id)
+      })
+	  //Token 服务将在30s内过期回调。
+      rtc.client.on("onTokenPrivilegeWillExpire", function(){
+		  // After requesting a new token
+		  // rtc.client.renewToken(token);
+      })
+	  //Token 已过期回调。
+      rtc.client.on("onTokenPrivilegeDidExpire", function(){
+		  // After requesting a new token
+		  // client.renewToken(token);
+      })
+    }
+
+    /**
+      * rtc: rtc object
+      * option: {
+      *  mode: string, "live" | "rtc"
+      *  codec: string, "h264" | "vp8"
+      *  appID: string
+      *  channel: string, channel name
+      *  uid: number
+      *  token; string,
+      * }
+     **/
+    function join (rtc, option) {
+      if (rtc.joined) {
+        Toast.error("Your already joined")
+        return;
+      }
+	  rtc.client = AgoraRTC.createClient({mode: "live", codec: "h264"})
+	  
+	  rtc.params = option
+	  
+	  // handle AgoraRTC client event
+	  handleEvents(rtc)
+	  
+	  // init client
+	  rtc.client.init(room_appid, function () {
+	    console.log("init success")
+	  
+	    /**
+	     * Joins an AgoraRTC Channel
+	     * This method joins an AgoraRTC channel.
+	     * Parameters
+	     * tokenOrKey: string | null
+	     *    Low security requirements: Pass null as the parameter value.
+	     *    High security requirements: Pass the string of the Token or Channel Key as the parameter value. See Use Security Keys for details.
+	     *  channel: string
+	     *    A string that provides a unique channel name for the Agora session. The length must be within 64 bytes. Supported character scopes:
+	     *    26 lowercase English letters a-z
+	     *    26 uppercase English letters A-Z
+	     *    10 numbers 0-9
+	     *    Space
+	     *    "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+	     *  uid: number | null
+	     *    The user ID, an integer. Ensure this ID is unique. If you set the uid to null, the server assigns one and returns it in the onSuccess callback.
+	     *   Note:
+	     *      All users in the same channel should have the same type (number or string) of uid.
+	     *      If you use a number as the user ID, it should be a 32-bit unsigned integer with a value ranging from 0 to (232-1).
+	    **/
+		rtc.client.join(option.token ? option.token : null, room_channel_name, current_uid
+		, function (uid) {
+		
+		  current_uid = uid;
+		  //加入成功
+		  Toast.info("欢迎加入")
+	      rtc.joined = true
+		  
+	      rtc.params.uid = current_uid
+	  
+		  if(roomType == 0){
+			  //语音
+			  // create local stream
+			  rtc.localStream = AgoraRTC.createStream({
+				  streamID: rtc.params.uid,
+				  audio: true,
+				  video: false,//只允许语音
+				  screen: false,
+				  microphoneId: option.microphoneId,
+				  cameraId: option.cameraId
+			  })
+		  } else {
+			  //视频
+			  // create local stream
+			  rtc.localStream = AgoraRTC.createStream({
+				  streamID: rtc.params.uid,
+				  audio: true,
+				  video: true,
+				  screen: false,
+				  microphoneId: option.microphoneId,
+				  cameraId: option.cameraId
+			  })
+		  }
+	      
+	  
+	      // initialize local stream. Callback function executed after intitialization is done
+	      rtc.localStream.init(function () {
+			  
+			  console.log("init local stream success")
+			  
+			  // play stream with html element id "local_stream"
+			  rtc.localStream.play("local_stream")
+			  
+			  // publish local stream
+			  publish(rtc)
+			  
+			  //颜色显示
+			  document.getElementById("open_mic").style.color="#00EE00"
+			  document.getElementById("open_mic").style.fontWeight="bold";
+			  document.getElementById("close_mic").style.color="#ffffff"
+			  document.getElementById("close_mic").style.fontWeight="normal";
+			  document.getElementById("open_camera").style.color="#00EE00"
+			  document.getElementById("open_camera").style.fontWeight="bold";
+			  document.getElementById("close_camera").style.color="#ffffff"
+			  document.getElementById("close_camera").style.fontWeight="normal";
+	      }, function (err)  {
+			  Toast.error("stream init failed, please open console see more detail," + err.msg)
+			  console.error("init local stream failed ", err)
+	      })
+		  
+		  //新增房间成员
+		  addRoomMember(current_uid)
+		 
+		  
+	    }, function(err) {
+			Toast.error("初始化失败, please open console see more detail")
+			console.error("client join failed", err)
+	    })
+	  }, (err) => {
+		  Toast.error("初始化失败, please open console see more detail")
+		  console.error(err)
+	  })
+    }
+	
+	
+	/**
+	 * 新增房间成员
+	 * @param {Object} uid
+	 */
+	function addRoomMember(uid){
+		var your_name = localStorage.getItem("YOUR_NAME"); //取回
+		$("#user_name").text(your_name);
+		$.ajax({
+			type: "post",
+			url: "https://wxapi.hzmttgroup.com:8848/insertRoomUserInfo",
+			dataType: "json",
+			data: {
+				room_name: roomName,
+				user_name: 'web-' + your_name,
+				user_id: '0',
+				user_uid: uid + '',
+				key: 'appROOM1684119622333hzmtt'
+			},
+			async: false,
+			success: function(data) {
+				console.log(data)
+			}
+		});
+		
+	}
+	
+
+
+    function publish (rtc) {
+		if (!rtc.client) {
+			Toast.error("请先加入房间！")
+			return
+		}
+		if (rtc.published) {
+			return
+		}
+		var oldState = rtc.published
+		
+		// publish localStream
+		rtc.client.publish(rtc.localStream, function (err) {
+			rtc.published = oldState
+			console.log("publish failed")
+			Toast.error("Publish失败！")
+			console.error(err)
+		})
+		rtc.published = true
+    }
+
+    function unpublish (rtc) {
+		if (!rtc.client) {
+			Toast.error("请先加入房间！")
+			return
+		}
+		if (!rtc.published) {
+			return
+		}
+		var oldState = rtc.published
+		rtc.client.unpublish(rtc.localStream, function (err) {
+			rtc.published = oldState
+			console.log("unpublish failed")
+			Toast.error("unpublish failed")
+			console.error(err)
+		})
+		Toast.info("unpublish")
+		rtc.published = false
+    }
+
+
+	/**
+	 * 离开房间
+	 * @param {Object} rtc
+	 */
+    function leave_room (rtc) {
+      if (!rtc.client) {
+		  Toast.error("请先加入房间！")
+		  return
+      }
+      if (!rtc.joined) {
+		  Toast.error("您还没有加入房间！")
+		  return
+      }
+	  /**
+	   * Leaves an AgoraRTC Channel
+	   * This method enables a user to leave a channel.
+	   **/
+	  rtc.client.leave(function () {
+	    // stop stream
+	    if(rtc.localStream.isPlaying()) {
+			rtc.localStream.stop()
+	    }
+	    // close stream
+	    rtc.localStream.close()
+	    for (let i = 0; i < rtc.remoteStreams.length; i++) {
+			var stream = rtc.remoteStreams.shift()
+			var id = stream.getId()
+			if(stream.isPlaying()) {
+				stream.stop()
+			}
+			removeView(id)
+	    }
+	  		
+	    rtc.localStream = null
+	    rtc.remoteStreams = []
+	    rtc.client = null
+	    console.log("client leaves channel success")
+	    rtc.published = false
+	    rtc.joined = false
+	    Toast.notice("退出成功！2秒后返回")
+		setTimeout(function(){
+			//删除成员
+			reduceRoomMember()
+			Toast.notice("1秒后返回")
+			setTimeout(function(){
+				//返回上一页
+				window.history.go(-1);
+			}, 1000)
+		}, 1000)
+	  }, function (err) {
+		  console.log("channel leave failed")
+		  console.error(err)
+	  })
+    }
+	
+	
+	/**
+	 * 减少房间成员
+	 */
+	function reduceRoomMember(){
+		var your_name = localStorage.getItem("YOUR_NAME"); //取回
+		$("#user_name").text(your_name);
+		$.ajax({
+			type: "post",
+			url: "https://wxapi.hzmttgroup.com:8848/deleteRoomUserInfoByName",
+			dataType: "json",
+			data: {
+				room_name: roomName,
+				user_name: 'web-' + your_name,
+				key: 'appROOM1684119622333hzmtt'
+			},
+			async: false,
+			success: function(data) {
+				console.log(data)
+			}
+		});
+		
+	}
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+      var fields = ["appID", "channel"]
+	  
+	  //按钮监听
+	  $("#leave_room").on("click", function(e) {
+		  console.log("leave_room")
+		  e.preventDefault()
+		  leave_room(rtc)
+	  });
+	  $("#open_mic").on("click", function(e) {
+		  console.log("open_mic")
+		  e.preventDefault()
+		  open_mic()
+	  });
+	  $("#close_mic").on("click", function(e) {
+		  console.log("close_mic")
+		  e.preventDefault()
+		  close_mic()
+	  });
+	  $("#open_camera").on("click", function(e) {
+		  console.log("open_camera")
+		  e.preventDefault()
+		  open_camera()
+	  });
+	  $("#close_camera").on("click", function(e) {
+		  console.log("close_camera")
+		  e.preventDefault()
+		  close_camera()
+	  });
+	  $("#room_members").on("click", function(e) {
+		  console.log("room_members")
+		  e.preventDefault()
+		  room_members()
+	  });
+	  $("#leave_msg").on("click", function(e) {
+		  console.log("leave_msg")
+		  e.preventDefault()
+		  leave_msg()
+	  });
+	  //返回/关闭监听
+	  
+	  
+	  //60分钟后关闭
+	  setTimeout(function(){
+	  	//返回上一页
+		Toast.info("60分钟到啦，请休息一下吧！")
+	  	leave_room(rtc)
+	  }, 60*60*1000)
+	  
+	  //接收数据
+	  var para = window.location.search;
+	  roomName = decodeURI(para.slice(para.indexOf("=") + 1));
+	  console.log(roomName)
+	  
+	  
+	  //获取房间信息
+	  $.ajax({
+	  	type: "post",
+	  	url: "https://wxapi.hzmttgroup.com:8848/queryRoomListsByRoomName",
+	  	dataType: "json",
+	  	data: {
+	  		room_name: roomName,
+	  		key: 'appROOM1684119622333hzmtt'
+	  	},
+	  	async: false,
+	  	success: function(data) {
+	  		console.log(data)
+			if(200 == data.code) {
+				roomName = data.data[0].room_name;
+				room_appid = data.data[0].agora_id;
+				room_channel_name = data.data[0].channel_name;
+				if(room_appid){
+					var params = serializeformData(); // Data is feteched and serilized from the form element.
+					roomType = data.data[0].room_type
+					join(rtc, params)
+					//体验房间1分钟
+					if((roomName == "官方语音体验房间") || (roomName == "官方视频体验房间")) {
+						setTimeout(function(){
+							//返回上一页
+							Toast.info("1分钟体验时间到，请创建您自己的房间！")
+							leave_room(rtc)
+						}, 60 * 1000)
+					}
+				} else {
+					alert("APPID为空，请联系客服！")
+				}
+			} else{
+				 alert(data.desc)
+			}
+	  	}
+	  });
+	  
+	  
+    })
+	
+	
+	
+	/**
+	 * 打开麦克风
+	 * 
+	 */
+	function open_mic() {
+		if (!rtc.client) {
+			Toast.error("请先加入房间！")
+			return
+		}
+		if (!rtc.joined) {
+			Toast.error("您没有在房间中，请重试！")
+			return
+		}
+		rtc.localStream.unmuteAudio()
+		document.getElementById("open_mic").style.color="#00EE00"
+		document.getElementById("open_mic").style.fontWeight="bold";
+		document.getElementById("close_mic").style.color="#ffffff"
+		document.getElementById("close_mic").style.fontWeight="normal";
+		Toast.info("麦克风已开启")
+	}
+	
+	
+	/**
+	 * 关闭麦克风
+	 * 
+	 */
+	function close_mic() {
+		if (!rtc.client) {
+			Toast.error("请先加入房间！")
+			return
+		}
+		if (!rtc.joined) {
+			Toast.error("您没有在房间中，请重试！")
+			return
+		}
+		rtc.localStream.muteAudio()
+		document.getElementById("open_mic").style.color="#ffffff"
+		document.getElementById("open_mic").style.fontWeight="normal";
+		document.getElementById("close_mic").style.color="#00EE00"
+		document.getElementById("close_mic").style.fontWeight="bold";
+		Toast.info("麦克风已关闭")
+	}
+	
+	
+	/**
+	 * 打开摄像头
+	 * 
+	 */
+	function open_camera() {
+		if (!rtc.client) {
+			Toast.error("请先加入房间！")
+			return
+		}
+		if (!rtc.joined) {
+			Toast.error("您没有在房间中，请重试！")
+			return
+		}
+		if(roomType == 0){
+			Toast.error("只有视频房间才有此项功能！")
+			return
+		}
+		rtc.localStream.enableVideo()
+		document.getElementById("open_camera").style.color="#00EE00"
+		document.getElementById("open_camera").style.fontWeight="bold";
+		document.getElementById("close_camera").style.color="#ffffff"
+		document.getElementById("close_camera").style.fontWeight="normal";
+		Toast.info("摄像头已开启")
+	}
+	
+	/**
+	 * 关闭摄像头
+	 * 
+	 */
+	function close_camera() {
+		if (!rtc.client) {
+			Toast.error("请先加入房间！")
+			return
+		}
+		if (!rtc.joined) {
+			Toast.error("您没有在房间中，请重试！")
+			return
+		}
+		if(roomType == 0){
+			Toast.error("只有视频房间才有此项功能！")
+			return
+		}
+		rtc.localStream.disableVideo()
+		document.getElementById("open_camera").style.color="#ffffff"
+		document.getElementById("open_camera").style.fontWeight="normal";
+		document.getElementById("close_camera").style.color="#00EE00"
+		document.getElementById("close_camera").style.fontWeight="bold";
+		Toast.info("摄像头已关闭")
+	}
+	
+	
+	/**
+	 * 房间成员
+	 */
+	function room_members () {
+		window.open('./room_members.html?roomName=' + encodeURI(roomName))//编码+打开新的页面
+	}
+	
+	/**
+	 * 留言列表
+	 */
+	function leave_msg(){
+		window.open('./leave_messages.html?roomName=' + encodeURI(roomName));
+	}
+	
+	
+	function serializeformData() {
+	  var formData = $("#form").serializeArray()
+	  var obj = {}
+	  for (var item of formData) {
+	    var key = item.name
+	    var val = item.value
+	    obj[key] = val
+	  }
+	  return obj
+	}
+	
+	
+  </script>
+  
+  <style>
+	  .video-grid{
+		  width: 120pt;
+		  height: 120pt;
+		  margin: 10pt;
+	  }
+	  .video-view{
+		  margin: 1pt;
+		  background-color: #2b2b2b;
+	  }
+	  .view-username{
+		  justify-content: center;
+		  align-items: center;
+		  text-align: center;
+		  color: #2b2b2b;
+		  line-height: 1.8;
+	  }
+	  .view-tips{
+		  margin: 20px;
+		  justify-content: left;
+		  align-items: left;
+		  text-align: left;
+		  color: crimson;
+		  line-height: 2;
+	  }
+  </style>
+  
+</html>

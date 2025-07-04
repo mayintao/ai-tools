@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Room会议</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+</head>
+<body class="agora-theme">
+  <div class="navbar-fixed">
+    <nav class="agora-navbar">
+      <div class="nav-wrapper agora-primary-bg valign-wrapper">
+        <h5 class="left-align">成员列表</h5>
+      </div>
+    </nav>
+  </div>
+  <ul id="memberlist" class="list-view">
+	  
+  </ul> 
+   
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  <script src="AgoraRTCSDK-3.6.11.js"></script>
+  
+  <script>
+    
+	var roomName = "";
+	var mNamesStr = "";
+	
+
+    function Toastify (options) {
+      M.toast({html: options.text, classes: options.classes})
+    }
+
+    var Toast = {
+      info: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "info-toast"
+        })
+      },
+      notice: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "notice-toast"
+        })
+      },
+      error: (msg) => {
+        Toastify({
+          text: msg,
+          classes: "error-toast"
+        })
+      }
+    }
+    
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+      // This will start the join functions with all the configuration selected by the user.
+      
+	  //接收数据
+	  var para = window.location.search;
+	  roomName = decodeURI(para.slice(para.indexOf("=") + 1));
+	  
+	  //获取房间成员
+	  $.ajax({
+	  	type: "post",
+	  	url: "https://wxapi.hzmttgroup.com:8848/queryRoomUserInfoLists",
+	  	dataType: "json",
+	  	data: {
+	  		room_name: roomName,
+	  		startnum: 0,
+	  		key: 'appROOM1684119622333hzmtt'
+	  	},
+	  	async: false,
+	  	success: function(data) {
+	  		console.log(data)
+			if(200 == data.code){
+				for(var i in data.data){
+					if(!(mNamesStr.indexOf(data.data[i].user_name) >= 0)) {
+						$("<li />", {
+						  text: data.data[i].user_name + "加入房间：" + data.data[i].Time
+						}).appendTo("#memberlist")
+						mNamesStr += data.data[i].user_name
+					}
+				}
+			} else {
+				Toast.info(data.desc)
+			}
+	  	}
+	  });
+	 
+	  
+    })
+	
+	
+
+  </script>
+  
+  <style>
+  	  
+  	  .list-view{
+		  margin: 20px;
+  		  justify-content: center;
+  		  align-items: center;
+  		  text-align: left;
+  		  color: #2b2b2b;
+  		  line-height: 1.8;
+		  text-justify: auto;
+  	  }
+  	  
+  </style>
+  
+</html>
