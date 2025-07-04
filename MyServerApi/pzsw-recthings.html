@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2322403945276683"
+	     crossorigin="anonymous"></script>
+	<meta name="google-adsense-account" content="ca-pub-2322403945276683">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>麦糖糖-拍照识物</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2322403945276683"
+       crossorigin="anonymous"></script>
+</head>
+<body class="agora-theme">
+  <div class="navbar-fixed">
+    <nav class="agora-navbar">
+      <div class="nav-wrapper agora-primary-bg valign-wrapper">
+        <h5 class="left-align">动植物</h5>
+      </div>
+    </nav>
+  </div>
+  <label class="nav-wrapper agora-primary-bg valign-wrapper">动物-2</label>
+  <ul id="reclist2" class="list-view">
+	  <img />
+  </ul>
+  <label class="nav-wrapper agora-primary-bg valign-wrapper">植物-3</label>
+  <ul id="reclist3" class="list-view">
+  	  <img />
+  </ul>
+   
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  
+  
+  <script>
+    
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+      // This will start the join functions with all the configuration selected by the user.
+      
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/queryPzswResult?num=0&type=2",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  for(var i in data.data){
+				  $("<li />", {
+					  text: "【" + data.data[i].save_time + "】" + data.data[i].name + "-" + data.data[i].description + "，相似度：" + data.data[i].similar_score + "，图片：" + data.data[i].image_url
+				  }).appendTo("#reclist2")
+				  $("<img />", {
+					  src: data.data[i].image_url
+				  }).appendTo("#reclist2")
+			  }
+		  }
+	  });
+	  
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/queryPzswResult?num=0&type=3",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  for(var i in data.data){
+				  $("<li />", {
+					  text: "【" + data.data[i].save_time + "】" + data.data[i].name + "-" + data.data[i].description + "，相似度：" + data.data[i].similar_score + "，图片：" + data.data[i].image_url
+				  }).appendTo("#reclist3")
+				  $("<img />", {
+					  src: data.data[i].image_url
+				  }).appendTo("#reclist3")
+			  }
+		  }
+	  });
+	  
+    })
+	
+	
+
+  </script>
+  
+  <style>
+  	  
+  	  .list-view{
+		  margin: 20px;
+  		  justify-content: center;
+  		  align-items: center;
+  		  text-align: left;
+  		  color: #2b2b2b;
+  		  line-height: 1.8;
+		  text-justify: auto;
+  	  }
+	  .view_leavemsg{
+		  margin: 20px;
+		  width: 20%;
+	  }
+  	  
+  </style>
+  
+</html>

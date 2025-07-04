@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2322403945276683"
+	     crossorigin="anonymous"></script>
+	<meta name="google-adsense-account" content="ca-pub-2322403945276683">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>服务器API接口测试</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2322403945276683"
+       crossorigin="anonymous"></script>
+</head>
+<body class="agora-theme">
+  <form id="form" class="row col l12 s12">
+    <div class="row container col l12 s12">
+      <div class="col" style="min-width: 1200px; max-width: 1200px">
+        <div class="card" style="margin-top: 0px; margin-bottom: 0px;">
+          <div class="row card-content" style="margin-bottom: 0px;">
+              <div>
+              	<label for="TIME">当前时间</label>
+              	<input type="text" name="TIME" id="TIME">
+              </div>
+			  <label>---------杭州麦糖糖服务器API接口---------</label>
+			  <div>
+			  	<label for="TENCENT_API">腾讯云API剩余</label>
+			  	<input type="text" name="TENCENT_API" id="TENCENT_API">
+			  </div>
+			  <div>
+			  	<label for="room_apps">Room会议接口</label>
+				<input type="text" name="room_apps3" id="room_apps3">
+				<textarea class="text-wrapper" name="room_nums" id="room_nums" ></textarea>
+			  </div>
+			  <div>
+			  	<label for="gblzt">钢笔练字帖</label>
+			  	<input type="text" name="gblzt" id="gblzt">
+			  </div>
+			  <div>
+			  	<label for="sqxgs">睡前小故事</label>
+			  	<input type="text" name="sqxgs" id="sqxgs">
+				<input type="text" name="sqxgs_tx" id="sqxgs_tx">
+			  </div>
+			  <div>
+			  	<label for="sfz_apps">身份证管理APP</label>
+			  	<input type="text" name="sfz_apps" id="sfz_apps">
+			  </div>
+			  <div>
+			  	<label for="pzfy_apps">拍照翻译APP</label>
+			  	<input type="text" name="pzfy_apps" id="pzfy_apps">
+			  </div>
+			  <div>
+			  	<label for="AL_Translate">ALAPI翻译</label>
+			  	<input type="text" name="AL_Translate" id="AL_Translate">
+			  </div>
+			  <div>
+			  	<label for="HS_Translate_8848_1">火山翻译_8848_1</label>
+			  	<input type="text" name="HS_Translate_8848_1" id="HS_Translate_8848_1">
+			  </div>
+			  <div>
+			  	<label for="HS_Translate_8848_2">火山翻译_8848_2</label>
+			  	<input type="text" name="HS_Translate_8848_2" id="HS_Translate_8848_2">
+			  </div>
+			  <div>
+			  	<label for="HS_Translate_8848_3">火山翻译_8848_3</label>
+			  	<input type="text" name="HS_Translate_8848_3" id="HS_Translate_8848_3">
+			  </div>
+			  <div>
+			  	<label for="BD_KEY_8848">百度KEY_8848</label>
+			  	<input type="text" name="BD_KEY_8848" id="BD_KEY_8848">
+			  </div>
+			  <div>
+			  	<label for="SFZ_ALIPAY_HAVAPAY">身份证APPs_支付宝支付是否成功</label>
+			  	<input type="text" name="SFZ_ALIPAY_HAVAPAY" id="SFZ_ALIPAY_HAVAPAY">
+			  </div>
+			  <div>
+			  	<label for="CYZ_ALIPAY_HAVAPAY">测颜值APPs_支付宝支付是否成功</label>
+			  	<input type="text" name="CYZ_ALIPAY_HAVAPAY" id="CYZ_ALIPAY_HAVAPAY">
+			  </div>
+			  <label>---------宁波铭佳服务器API接口---------</label>
+			  <div>
+			  	<label for="letstalk_apps">LetsTalk接口</label>
+			  	<input type="text" name="letstalk_apps1" id="letstalk_apps1">
+				<input type="text" name="letstalk_apps2" id="letstalk_apps2">
+			  </div>
+			  <div>
+				<label >测颜值APPs显示数据</label>
+			    <div class="col s12" style="margin: 5px">
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="UNR_Faces_50">未发布-50张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="UNR_Faces_100">未发布-100张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="R_Faces_20">发布-20张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="R_Faces_50">发布-50张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="R_Faces_100">发布-100张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="Starface">测颜值-明星</button>
+			    </div>
+			  </div>
+			  <div>
+				<label >hzmtt拍照识物APPs显示数据</label>
+			    <div class="col s12" style="margin: 5px">
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="UR_Pzsw_50">用户提问-未发布-50张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="R_Pzsw_50">用户提问-发布-50张</button>
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="hzmtt_Plant_Animal">MTT动植物数据</button>
+			    </div>
+			  </div>
+			  <div>
+				<label >nbmj拍照识花神器APPs显示数据</label>
+			    <div class="col s12" style="margin: 5px">
+					<button class="btn btn-raised btn-primary waves-effect waves-light" style="margin: 5px" id="nbmj_Plant_Animal">NBMJ动植物数据</button>
+			    </div>
+			  </div>
+			  
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  
+  
+  <script>
+    
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+      // This will start the join functions with all the configuration selected by the user.
+	  $("#TIME").val(new Date);
+	  //mtt
+	  doTencent_Api()
+	  doROOMAPPs()
+	  doGBLZT()
+	  doSQXGS()
+	  doSFZAPPs()
+	  doPZFYAPPs()
+	  doTranslateAL()
+      doTranslateHS_Translate_8848_1()
+      doTranslateHS_Translate_8848_2()
+      doTranslateHS_Translate_8848_3()
+      doBDKey_8848()
+	  doSFZ_Alipay_HavePay()
+	  doCYZ_Alipay_HavePay()
+	  //nbmj
+	  doLETSTALKAPPs()
+	  
+	  // This will start the join functions with all the configuration selected by the user.
+	  
+	  //ccyzb
+	  $("#UNR_Faces_50").on("click", function(e) {
+		  console.log("UNR_Faces_50")
+		  e.preventDefault()
+		  UNR_Faces_50()
+	  });
+	  
+	  $("#UNR_Faces_100").on("click", function(e) {
+		  console.log("UNR_Faces_100")
+		  e.preventDefault()
+		  UNR_Faces_100()
+	  });
+	  
+	  $("#R_Faces_20").on("click", function(e) {
+		  console.log("R_Faces_20")
+		  e.preventDefault()
+		  R_Faces_20()
+	  });
+	  
+	  $("#R_Faces_50").on("click", function(e) {
+		  console.log("R_Faces_50")
+		  e.preventDefault()
+		  R_Faces_50()
+	  });
+	  
+	  $("#R_Faces_100").on("click", function(e) {
+		  console.log("R_Faces_100")
+		  e.preventDefault()
+		  R_Faces_100()
+	  });
+	  $("#Starface").on("click", function(e) {
+		  console.log("Starface")
+		  e.preventDefault()
+		  Starface()
+	  });
+	  
+	  //pzsw
+	  $("#UR_Pzsw_50").on("click", function(e) {
+		  console.log("UR_Pzsw_50")
+		  e.preventDefault()
+		  UR_Pzsw_50()
+	  });
+	  $("#R_Pzsw_50").on("click", function(e) {
+		  console.log("R_Pzsw_50")
+		  e.preventDefault()
+		  R_Pzsw_50()
+	  });
+	  $("#hzmtt_Plant_Animal").on("click", function(e) {
+		  console.log("hzmtt_Plant_Animal")
+		  e.preventDefault()
+		  hzmtt_Plant_Animal()
+	  });
+	  $("#nbmj_Plant_Animal").on("click", function(e) {
+		  console.log("nbmj_Plant_Animal")
+		  e.preventDefault()
+		  nbmj_Plant_Animal()
+	  });
+	  
+	  
+    })
+	
+	function doTranslateAL () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://v2.alapi.cn/api/fanyi?token=LUv01KJmzvmc1HG1&from=zh&to=en&q=你还好吗？",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#AL_Translate").val(data.data.dst);
+		      
+		  }
+	  });
+	}
+	  
+	function doTranslateHS_Translate_8848_1 () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/getTranslateTxtResult?from=en&to=zh&content=hello world",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#HS_Translate_8848_1").val(data.TranslationList[0].Translation);
+		      
+		  }
+	  });
+	}
+	  
+	function doTranslateHS_Translate_8848_2 () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/getTranslateTxtResult2?from=en&to=zh&content=how are you",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#HS_Translate_8848_2").val(data.TranslationList[0].Translation);
+		      
+		  }
+	  });
+	}
+	  
+	function doTranslateHS_Translate_8848_3 () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/getTranslateTxtResult3?from=en&to=zh&content=I really miss you",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#HS_Translate_8848_3").val(data.TranslationList[0].Translation);
+		      
+		  }
+	  });
+	}
+	  
+	
+	  
+	function doBDKey_8848 () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/getBaiduKey?androidId=12345678wertyusdfgh&appname=UniApp",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#BD_KEY_8848").val(data.key);
+		      
+		  }
+	  });
+	}
+	  
+	
+	  
+	//数据类型不是json，而是text！
+	function doTencent_Api () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/getUsagePlanUsageAmount",
+		  dataType: "text",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#TENCENT_API").val(data);
+		      
+		  }
+	  });
+	}
+	
+	//sfz
+	function doSFZ_Alipay_HavePay () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/alipayHavePay?userName=来自WEB端测试&useFunction=***功能&payChannel=ZFB&payOrderInfo=2022122722001446431402625429&appVersion=117",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#SFZ_ALIPAY_HAVAPAY").val('状态：' + data.code + '，' + data.desc);
+		      
+		  }
+	  });
+	}
+	
+	//ccyzb
+	function doCYZ_Alipay_HavePay () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/alipayHavePayCyz?userName=WEB端测试&useFunction=测颜值&payChannel=ZFB&payOrderInfo=2022122722001446431402625429&appVersion=164",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#CYZ_ALIPAY_HAVAPAY").val('状态：' + data.code + '，' + data.desc);
+		      
+		  }
+	  });
+	}
+	
+	
+	/**
+	 * 测颜值-未发布-50
+	 * 
+	 */
+	function UNR_Faces_50() {
+		window.location.href = './ceyanzhi-faces.html?type=0';
+	}
+	
+	/**
+	 * 测颜值-未发布-100
+	 * 
+	 */
+	function UNR_Faces_100() {
+		window.location.href = './ceyanzhi-faces.html?type=2';
+	}
+	
+	
+	/**
+	 * 测颜值-20
+	 * 已发布
+	 * 
+	 */
+	function R_Faces_20() {
+		window.location.href = './ceyanzhi-faces.html?type=3';
+	}
+	
+	/**
+	 * 测颜值-50
+	 * 已发布
+	 * 
+	 */
+	function R_Faces_50() {
+		window.location.href = './ceyanzhi-faces.html?type=4';
+	}
+	
+	/**
+	 * 测颜值-100
+	 * 已发布
+	 * 
+	 */
+	function R_Faces_100() {
+		window.location.href = './ceyanzhi-faces.html?type=5';
+	}
+	
+	/**
+	 * 测颜值-明星
+	 * 
+	 * @param {Object} rtc
+	 * @param {Object} option
+	 */
+	function Starface() {
+		window.location.href = './ceyanzhi-starfaces.html';
+	}
+	
+	/**
+	 * pzsw-未发布提问-50
+	 * 
+	 */
+	function UR_Pzsw_50() {
+		window.location.href = './pzsw-questions.html?type=0';
+	}
+	
+	/**
+	 * pzsw-提问-50
+	 * 已发布
+	 * 
+	 */
+	function R_Pzsw_50() {
+		window.location.href = './pzsw-questions.html?type=3';
+	}
+	
+	/**
+	 * pzsw-动植物
+	 * 
+	 */
+	function hzmtt_Plant_Animal() {
+		window.location.href = './pzsw-recthings.html';
+	}
+	
+	/**
+	 * pzshsq-动植物
+	 * 
+	 */
+	function nbmj_Plant_Animal() {
+		window.location.href = './pzshsq-recthings.html';
+	}
+	
+	
+	//gblzt
+	function doGBLZT () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/queryGblztUserInfo?username=zsh&key=appGBLZT1681439248hzmtt",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#gblzt").val('数据：' + data.code + '，' + data.data[0].username);
+		      
+		  }
+	  });
+	}
+	
+	//sqxgs
+	function doSQXGS () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/querySqxgsPlayClass?startnum=0&key=appSQxGS1681706789hzmtt&type=0",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#sqxgs").val('数据：' + data.code + '，' + data.data[0].object_class_name);
+		      
+		  }
+	  });
+	  
+	  //tx
+	  $.ajax({
+	  		  type: "get",
+	  		  url: "https://wxapi.hzmttgroup.com:8848/gotoSqxgsTxtToAudio?key=appSQxGS1681706789hzmtt",
+	  		  dataType: "json",
+	  		  async: false,
+	  		  success: function(data) {
+	  			  console.log(data)
+				  //获取需要获取的音频
+				  $.ajax({
+				  		  type: "get",
+				  		  url: "https://wxapi.hzmttgroup.com:8848/gotoSqxgsTxtToAudioNeedUrl?key=appSQxGS1681706789hzmtt",
+				  		  dataType: "json",
+				  		  async: false,
+				  		  success: function(data) {
+				  			  console.log(data)
+							  $.ajax({
+							  		  type: "get",
+							  		  url: "https://wxapi.hzmttgroup.com:8848/querySqxgsTxAudioLists?startnum=0&key=appSQxGS1681706789hzmtt",
+							  		  dataType: "json",
+							  		  async: false,
+							  		  success: function(data) {
+							  			  console.log(data)
+							  			  $("#sqxgs_tx").val('TxAudioLists音频数据：状态：' + data.code + '，最新五个故事：' 
+										  + data.data[0].title + "；" + data.data[1].title + "；" + data.data[2].title + "；" + data.data[3].title + "；" + data.data[4].title);
+							  		  }
+							  });
+				  		  }
+				  });
+	  		  }
+	  });
+	  
+	}
+	
+	//sfzapps
+	function doSFZAPPs () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/querySfzNewUser?user_phone_number=13616548127&key=appSFZ1681884202hzmtt",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#sfz_apps").val('状态：' + data.code + '，' + data.data[0].user_phone_number);
+		      
+		  }
+	  });
+	}
+	
+	//拍照翻译
+	function doPZFYAPPs () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/queryPzfyUserInfo?username=一直很安静&key=appPZFY1682476700192hzmtt",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#pzfy_apps").val('状态：' + data.code + '，' + data.data[0].username + "，isMember ：" + data.data[0].isMember);
+		      
+		  }
+	  });
+	}
+	
+	//room会议
+	//查询历史数据
+	var room_history_num = '房间历史参与人数统计：\n\n';
+	function doROOMAPPs () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/queryRoomUserHistoryForAPITest?key=appROOM1684119622333hzmtt",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  for(var i=0; i<data.data.length; i++){
+				  room_history_num += data.data[i].room_name + "：" + data.data[i].count + "人。\n"
+			  }
+			  $("#room_nums").val(room_history_num)
+		  }
+	  });
+	  $.ajax({
+		  type: "get",
+		  url: "https://wxapi.hzmttgroup.com:8848/queryRoomTalkerUserInfo?username=唐兰芳&key=appROOM1684119622333hzmtt",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#room_apps3").val('Room注册用户，状态：' + data.code + '，' + data.data[0].username + "，isMember ：" + data.data[0].isMember);
+		  }
+	  });
+	}
+	
+	
+	//letstalk
+	function doLETSTALKAPPs () {
+	  $.ajax({
+		  type: "get",
+		  url: "https://app.nbmjgroup.com:8848/queryLetsTalkRoomList?roomType=1&startnum=0&key=appLETSTALK1683779280158nbmj",
+		  dataType: "json",
+		  async: false,
+		  success: function(data) {
+			  console.log(data)
+			  $("#letstalk_apps1").val('LestTalk房间信息，状态：' + data.code + '，总' + data.data.length + "，房间 ：" + data.data[0].roomName + "By" + data.data[0].createUserName);
+		      
+		  }
+	  });
+	  $.ajax({
+	  		  type: "get",
+	  		  url: "https://app.nbmjgroup.com:8848/queryLetsTalkRoomUser?user_name=Andy&key=appLETSTALK1683779280158nbmj",
+	  		  dataType: "json",
+	  		  async: false,
+	  		  success: function(data) {
+	  			  console.log(data)
+	  			  $("#letstalk_apps2").val('LestTalk注册用户，状态：' + data.code + '，' + data.data[0].user_name + "，isMember ：" + data.data[0].isMember);
+	  		      
+	  		  }
+	  });
+	}
+	
+	
+	function doCheckRoomHistory(room_name){
+		
+		//post测试
+		// $.ajax({
+		// 	type: "post",
+		// 	url: "https://localhost:8848/inertPzfyUserInfo",
+		// 	dataType: "json",
+		// 	data: {
+		// 		username: '马大',
+		// 		password: '123',
+		// 		isMember: 0,
+		// 		isSuperVip: 0,
+		// 		key: 'appPZFY1682476700192hzmtt'
+		// 	},
+		// 	async: false,
+		// 	success: function(data) {
+		// 		console.log(data)
+				
+		// 	}
+		// });
+	}
+	
+	
+  </script>
+  
+  <style>
+  	  .view-tips{
+		  margin: 10px;
+  		  justify-content: left;
+  		  align-items: left;
+  		  text-align: left;
+  		  color: crimson;
+  		  line-height: 2;
+  	  }
+	  .text-wrapper {
+	      min-height: 400px;
+	      padding: 10px 10px;
+	      font-size: 15px;
+	  }
+	  
+	  
+  	  
+  </style>
+  
+</html>

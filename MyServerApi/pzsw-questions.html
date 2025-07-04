@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2322403945276683"
+	     crossorigin="anonymous"></script>
+	<meta name="google-adsense-account" content="ca-pub-2322403945276683">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>拍照识物</title>
+  <link rel="stylesheet" href="./assets/common.css" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2322403945276683"
+       crossorigin="anonymous"></script>
+</head>
+<body class="agora-theme">
+  <div class="navbar-fixed">
+    <nav class="agora-navbar">
+      <div class="nav-wrapper agora-primary-bg valign-wrapper">
+        <h5 class="left-align">提问</h5>
+      </div>
+    </nav>
+  </div>
+  <div>
+  <ul id="questionlist" class="list-view">
+	  <img />
+  </ul>
+   
+</body>
+  
+  
+  <!-- 此处增加第三方依赖 -->
+  <script src="vendor/jquery.min.js"></script>
+  <script src="vendor/materialize.min.js"></script>
+  
+  
+  <script>
+    
+	var type = 0;
+
+    // This function automatically executes when a document is ready.
+    $(function () {
+      
+	  //接收数据
+	  var para = window.location.search;
+	  type = para.slice(para.indexOf("=") + 1);
+	  console.log(type)
+	  
+      if(0 == type){
+		  UR_50();
+	  } else if(3 == type){
+		  R_50();
+	  } 
+	  
+    })
+	
+	
+	/**
+	 * 提问-未发布-50
+	 * 
+	 */
+	function UR_50() {
+		$.ajax({
+			type: "get",
+			url: "https://wxapi.hzmttgroup.com:8848/queryPzswQuestion?num=0&isCanRelease=0",
+			dataType: "json",
+			async: false,
+			success: function(data) {
+				console.log(data)
+				for(var i in data.data){
+					$("<li />", {
+						text: "【" + data.data[i].save_time + "】" + data.data[i].user_name + "：" + data.data[i].title
+					}).appendTo("#questionlist")
+					$("<img />", {
+						src: data.data[i].native_image_url,
+						width: "300",
+						height: "400"
+					}).appendTo("#questionlist")
+				}
+			}
+		});
+	}
+	
+	
+	/**
+	 * 提问-20
+	 * 已发布
+	 * 
+	 */
+	function R_50() {
+		$.ajax({
+			type: "get",
+			url: "https://wxapi.hzmttgroup.com:8848/queryPzswQuestion?num=0&isCanRelease=1",
+			dataType: "json",
+			async: false,
+			success: function(data) {
+				console.log(data)
+				for(var i in data.data){
+					$("<li />", {
+						text: "已发布【" + data.data[i].save_time + "】" + data.data[i].user_name + "：" + data.data[i].title
+					}).appendTo("#questionlist")
+					$("<img />", {
+						src: data.data[i].native_image_url,
+						width: "300",
+						height: "400"
+					}).appendTo("#questionlist")
+				}
+			}
+		});
+	}
+	
+
+  </script>
+  
+  <style>
+  	  
+  	  .list-view{
+		  margin: 20px;
+  		  justify-content: center;
+  		  align-items: center;
+  		  text-align: left;
+  		  color: #2b2b2b;
+  		  line-height: 1.8;
+		  text-justify: auto;
+  	  }
+	  .view_leavemsg{
+		  margin: 20px;
+		  width: 20%;
+	  }
+  	  
+  </style>
+  
+</html>
